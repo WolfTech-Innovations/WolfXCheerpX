@@ -7,7 +7,7 @@
     <script type="module">
       // The read-only disk image from Leaning Technologies' fast cloud backend
       const cloudDevice = await CheerpX.CloudDevice.create(
-        "http://vmcors.blooper-it.workers.dev"
+        "https://vmcors.blooper-it.workers.dev"
       );
       // Read-write local storage for disk blocks, it is used both as a cache and as persisteny writable storage
       const idbDevice = await CheerpX.IDBDevice.create("block1");
