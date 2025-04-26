@@ -1,0 +1,75 @@
+const vm = {
+    isRunning: false,
+    isPaused: false,
+    emulatorStatus: document.getElementById('emulator-status'),
+    progressBar: document.getElementById('upload-progress'),
+    cx: null,
+
+    initialize: async function() {
+        try {
+            this.updateStatus('Initializing CheerpX...');
+            this.cx = await CheerpX.Linux.create();
+            this.cx.setConsole(document.getElementById('screen-container'));
+            this.updateStatus('CheerpX initialized.');
+        } catch (error) {
+            this.updateStatus('Failed to initialize CheerpX.');
+            console.error(error);
+        }
+    },
+
+    start: async function() {
+        if (!this.isRunning) {
+            this.isRunning = true;
+            this.isPaused = false;
+            this.updateStatus('Starting WolfOS...');
+            this.progressBar.style.width = '100%';
+            try {
+                await this.cx.run('/init');
+                this.updateStatus('WolfOS is running.');
+            } catch (error) {
+                this.updateStatus('Failed to start WolfOS.');
+                console.error(error);
+            }
+        }
+    },
+
+    pause: function() {
+        if (this.isRunning && !this.isPaused) {
+            this.isPaused = true;
+            this.updateStatus('WolfOS is paused.');
+            // Implement pause functionality if supported by CheerpX
+        }
+    },
+
+    reset: function() {
+        this.isRunning = false;
+        this.isPaused = false;
+        this.updateStatus('Resetting emulator...');
+        this.progressBar.style.width = '0%';
+        // Implement reset functionality if supported by CheerpX
+    },
+
+    updateStatus: function(statusText) {
+        this.emulatorStatus.textContent = statusText;
+    },
+
+    updateProgress: function(progress) {
+        this.progressBar.style.width = `${progress}%`;
+    }
+};
+
+document.getElementById('start-btn').addEventListener('click', function() {
+    vm.start();
+});
+
+document.getElementById('pause-btn').addEventListener('click', function() {
+    vm.pause();
+});
+
+document.getElementById('reset-btn').addEventListener('click', function() {
+    vm.reset();
+});
+
+window.onload = function() {
+    vm.initialize();
+};
