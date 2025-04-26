@@ -7,7 +7,7 @@
     <script type="module">
       // The read-only disk image from Leaning Technologies' fast cloud backend
       const cloudDevice = await CheerpX.CloudDevice.create(
-        "https://sourceforge.net/projects/wolfos/files/WolfOS-v1.iso/download"
+        "https://pub-71852ece18b943d3abe269bddc326541.r2.dev/WLFVM.img"
       );
       // Read-write local storage for disk blocks, it is used both as a cache and as persisteny writable storage
       const idbDevice = await CheerpX.IDBDevice.create("block1");
