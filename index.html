@@ -1,75 +1,48 @@
-const vm = {
-    isRunning: false,
-    isPaused: false,
-    emulatorStatus: document.getElementById('emulator-status'),
-    progressBar: document.getElementById('upload-progress'),
-    cx: null,
-
-    initialize: async function() {
-        try {
-            this.updateStatus('Initializing CheerpX...');
-            this.cx = await CheerpX.Linux.create();
-            this.cx.setConsole(document.getElementById('screen-container'));
-            this.updateStatus('CheerpX initialized.');
-        } catch (error) {
-            this.updateStatus('Failed to initialize CheerpX.');
-            console.error(error);
-        }
-    },
-
-    start: async function() {
-        if (!this.isRunning) {
-            this.isRunning = true;
-            this.isPaused = false;
-            this.updateStatus('Starting WolfOS...');
-            this.progressBar.style.width = '100%';
-            try {
-                await this.cx.run('/init');
-                this.updateStatus('WolfOS is running.');
-            } catch (error) {
-                this.updateStatus('Failed to start WolfOS.');
-                console.error(error);
-            }
-        }
-    },
-
-    pause: function() {
-        if (this.isRunning && !this.isPaused) {
-            this.isPaused = true;
-            this.updateStatus('WolfOS is paused.');
-            // Implement pause functionality if supported by CheerpX
-        }
-    },
-
-    reset: function() {
-        this.isRunning = false;
-        this.isPaused = false;
-        this.updateStatus('Resetting emulator...');
-        this.progressBar.style.width = '0%';
-        // Implement reset functionality if supported by CheerpX
-    },
-
-    updateStatus: function(statusText) {
-        this.emulatorStatus.textContent = statusText;
-    },
-
-    updateProgress: function(progress) {
-        this.progressBar.style.width = `${progress}%`;
-    }
-};
-
-document.getElementById('start-btn').addEventListener('click', function() {
-    vm.start();
-});
-
-document.getElementById('pause-btn').addEventListener('click', function() {
-    vm.pause();
-});
-
-document.getElementById('reset-btn').addEventListener('click', function() {
-    vm.reset();
-});
-
-window.onload = function() {
-    vm.initialize();
-};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WolfOS x86_64 Emulator (CheerpX)</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cxrtnc.leaningtech.com/1.1.2/cx.js" defer></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>WolfOS x86_64 Emulator (CheerpX)</h1>
+        <div class="emulator-container">
+            <div id="screen-container"></div>
+            <div class="progress-container">
+                <div class="progress-bar" id="upload-progress"></div>
+            </div>
+            <div class="controls">
+                <button id="start-btn">Start WolfOS</button>
+                <button id="pause-btn">Pause</button>
+                <button id="reset-btn">Reset</button>
+            </div>
+            <div class="status">
+                Status: <span id="emulator-status">Not loaded</span>
+            </div>
+        </div>
+        <div class="info-panel">
+            <h3>Emulator Information</h3>
+            <ul>
+                <li><strong>Engine:</strong> CheerpX x86_64 Emulator</li>
+                <li><strong>RAM:</strong> 4GB</li>
+                <li><strong>Boot:</strong> WolfOS ISO (preloaded)</li>
+                <li><strong>OS:</strong> WolfOS v1</li>
+            </ul>
+            <h3>Instructions</h3>
+            <ol>
+                <li>Click <strong>"Start WolfOS"</strong> to boot the emulator.</li>
+                <li>Use your keyboard and mouse to interact.</li>
+                <li>Click inside the screen area to capture mouse input.</li>
+                <li>Press <strong>Esc</strong> to release mouse capture.</li>
+            </ol>
+            <h3>About WolfOS</h3>
+            <p>WolfOS is a lightweight operating system designed for educational purposes. It offers a simple interface for exploring basic operating system concepts.</p>
+        </div>
+    </div>
+</body>
+</html>
