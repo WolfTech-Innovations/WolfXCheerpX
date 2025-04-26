@@ -7,7 +7,7 @@
     <script type="module">
       // The read-only disk image from Leaning Technologies' fast cloud backend
       const cloudDevice = await CheerpX.CloudDevice.create(
-        "wss://disks.webvm.io/debian_large_20230522_5044875331.ext2"
+        "https://sourceforge.net/projects/wolfos/files/WolfOS-v1.iso/download"
       );
       // Read-write local storage for disk blocks, it is used both as a cache and as persisteny writable storage
       const idbDevice = await CheerpX.IDBDevice.create("block1");
@@ -22,30 +22,13 @@
       const dataDevice = await CheerpX.DataDevice.create();
 
       const cx = await CheerpX.Linux.create({
-        mounts: [
-          { type: "ext2", path: "/", dev: overlayDevice },
-          { type: "dir", path: "/app", dev: webDevice },
-          { type: "dir", path: "/data", dev: dataDevice },
-          { type: "devs", path: "/dev" },
-        ],
       });
 
       // Interact with a console
       cx.setConsole(document.getElementById("console"));
 
       // Run a full-featured shell in your browser.
-      await cx.run("/bin/bash", ["--login"], {
-        env: [
-          "HOME=/home/user",
-          "USER=user",
-          "SHELL=/bin/bash",
-          "EDITOR=vim",
-          "LANG=en_US.UTF-8",
-          "LC_ALL=C",
-        ],
-        cwd: "/home/user",
-        uid: 1000,
-        gid: 1000,
+      await cx.run("/init", {
       });
     </script>
   </head>
