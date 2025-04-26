@@ -1,48 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WolfOS x86_64 Emulator (CheerpX)</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cxrtnc.leaningtech.com/1.1.2/cx.js" defer></script>
-    <script src="script.js" defer></script>
-</head>
-<body>
-    <div class="container">
-        <h1>WolfOS x86_64 Emulator (CheerpX)</h1>
-        <div class="emulator-container">
-            <div id="screen-container"></div>
-            <div class="progress-container">
-                <div class="progress-bar" id="upload-progress"></div>
-            </div>
-            <div class="controls">
-                <button id="start-btn">Start WolfOS</button>
-                <button id="pause-btn">Pause</button>
-                <button id="reset-btn">Reset</button>
-            </div>
-            <div class="status">
-                Status: <span id="emulator-status">Not loaded</span>
-            </div>
-        </div>
-        <div class="info-panel">
-            <h3>Emulator Information</h3>
-            <ul>
-                <li><strong>Engine:</strong> CheerpX x86_64 Emulator</li>
-                <li><strong>RAM:</strong> 4GB</li>
-                <li><strong>Boot:</strong> WolfOS ISO (preloaded)</li>
-                <li><strong>OS:</strong> WolfOS v1</li>
-            </ul>
-            <h3>Instructions</h3>
-            <ol>
-                <li>Click <strong>"Start WolfOS"</strong> to boot the emulator.</li>
-                <li>Use your keyboard and mouse to interact.</li>
-                <li>Click inside the screen area to capture mouse input.</li>
-                <li>Press <strong>Esc</strong> to release mouse capture.</li>
-            </ol>
-            <h3>About WolfOS</h3>
-            <p>WolfOS is a lightweight operating system designed for educational purposes. It offers a simple interface for exploring basic operating system concepts.</p>
-        </div>
-    </div>
-</body>
+<!doctype html>
+<html lang="en" style="height: 100%;">
+  <head>
+    <meta charset="utf-8" />
+    <title>CheerpX Getting Started</title>
+    <script src="https://cxrtnc.leaningtech.com/1.1.2/cx.js"></script>
+    <script type="module">
+      // The read-only disk image from Leaning Technologies' fast cloud backend
+      const cloudDevice = await CheerpX.CloudDevice.create(
+        "wss://disks.webvm.io/debian_large_20230522_5044875331.ext2"
+      );
+      // Read-write local storage for disk blocks, it is used both as a cache and as persisteny writable storage
+      const idbDevice = await CheerpX.IDBDevice.create("block1");
+      // A device to overlay the local changes to the disk with the remote read-only image
+      const overlayDevice = await CheerpX.OverlayDevice.create(
+        cloudDevice,
+        idbDevice
+      );
+      // Direct acces to files in your HTTP server
+      const webDevice = await CheerpX.WebDevice.create("");
+      // Convenient access to JavaScript binary data and strings
+      const dataDevice = await CheerpX.DataDevice.create();
+
+      const cx = await CheerpX.Linux.create({
+        mounts: [
+          { type: "ext2", path: "/", dev: overlayDevice },
+          { type: "dir", path: "/app", dev: webDevice },
+          { type: "dir", path: "/data", dev: dataDevice },
+          { type: "devs", path: "/dev" },
+        ],
+      });
+
+      // Interact with a console
+      cx.setConsole(document.getElementById("console"));
+
+      // Run a full-featured shell in your browser.
+      await cx.run("/bin/bash", ["--login"], {
+        env: [
+          "HOME=/home/user",
+          "USER=user",
+          "SHELL=/bin/bash",
+          "EDITOR=vim",
+          "LANG=en_US.UTF-8",
+          "LC_ALL=C",
+        ],
+        cwd: "/home/user",
+        uid: 1000,
+        gid: 1000,
+      });
+    </script>
+  </head>
+  <body style="height: 100%; background: black;">
+    <pre id="console" style="height: 100%;"></pre>
+  </body>
 </html>
